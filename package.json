@@ -1,0 +1,16 @@
+{
+  "name": "shoes-bot-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com-goju2k:goju2k/shoes-bot-server.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
