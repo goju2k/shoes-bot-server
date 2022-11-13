@@ -1,0 +1,28 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '2.5.1'
+}
+
+group 'org.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web:2.7.4'
+    //implementation 'org.apache.poi:poi:5.2.2'
+    //implementation 'org.apache.poi:poi-ooxml:5.2.2'
+    implementation 'org.jsoup:jsoup:1.15.3'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
+}
+
+bootJar {
+    mainClass = 'com.my.document.generator.app.Application'
+}
+
+test {
+    useJUnitPlatform()
+}
