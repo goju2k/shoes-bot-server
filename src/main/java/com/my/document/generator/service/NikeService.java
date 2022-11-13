@@ -5,28 +5,27 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 @Service
 public class NikeService {
 
-    private final Logger logger = LoggerFactory.getLogger(NikeService.class);
+    private final Function<String,Void> log = (str) -> {
+        System.out.println("[NikeService] "+str);
+        return null;
+    };
 
     private Map<String,Long> NIKE_MODELS = null;
     private final long ONE_DAY_TIME = 1000 * 60 * 60 * 24;
     private final long MAX_CACHE_TIME = ONE_DAY_TIME * 5; //5일이 지나면 캐시에서 삭제
 
-    public List<String> getNikeNewRelease(
-            @RequestBody Map<String,String> inputData
-    ) {
+    public List<String> getNikeNewRelease(List<String> inputData) {
 
         List<String> result = new ArrayList<>();
         String url = "https://www.nike.com/kr/launch?s=in-stock";
@@ -34,7 +33,6 @@ public class NikeService {
 
         try {
 
-            logger.debug("userAgent => "+ UserAgentEnum.IPHONE.value());
             Document doc = Jsoup.connect(url)
                     .userAgent(UserAgentEnum.IPHONE.value())
                     .maxBodySize(3000000)
@@ -49,7 +47,9 @@ public class NikeService {
                 NIKE_MODELS = new HashMap<>();
                 if(elems != null){
                     for(Element elem : elems) {
-                        NIKE_MODELS.put(preUri + elem.attr("href"), System.currentTimeMillis());
+                        String href = preUri + elem.attr("href");
+                        log.apply("[model init] "+href);
+                        NIKE_MODELS.put(href, System.currentTimeMillis());
                     }
                 }
 
@@ -68,8 +68,12 @@ public class NikeService {
                             continue;
                         }
 
-                        NIKE_MODELS.put(href, System.currentTimeMillis());
-                        result.add(href);
+                        if(inputData == null || filterContains(inputData, href)){
+
+                            NIKE_MODELS.put(href, System.currentTimeMillis());
+                            result.add(href);
+
+                        }
 
                     }
 
@@ -83,6 +87,18 @@ public class NikeService {
 
         return result;
 
+    }
+
+    private boolean filterContains(List<String> filterList, String href){
+        if(filterList != null && !filterList.isEmpty()){
+            for(String str : filterList){
+                if(href.contains(str)){
+                    return true;
+                }
+            }
+            return false;
+        }
+        return true;
     }
 
     //nike cache 시간 지난것 제거

@@ -6,7 +6,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,15 +29,15 @@ public class BotController implements InitializingBean {
 
     @PostMapping("/nike/new")
     public List<String> getNikeNewRelease(
-            @RequestBody Map<String,String> inputData
+            @RequestBody Map<String,List<String>> inputData
     ) {
-        return nikeService.getNikeNewRelease(inputData);
+        return nikeService.getNikeNewRelease(inputData.get("filters"));
     }
 
     @Override
     public void afterPropertiesSet() {
         //캐싱처리
-        nikeService.getNikeNewRelease(new HashMap<>());
+        nikeService.getNikeNewRelease(new ArrayList<>());
     }
 
 }
