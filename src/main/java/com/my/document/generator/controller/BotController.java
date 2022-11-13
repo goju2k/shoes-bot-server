@@ -26,7 +26,6 @@ public class BotController {
     ) throws IOException {
 
         String url = "https://www.kream.co.kr/search?keyword="+model;
-        log(url);
 
         try{
 

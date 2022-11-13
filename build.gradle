@@ -21,6 +21,7 @@ dependencies {
 
 bootJar {
     mainClass = 'com.my.document.generator.app.Application'
+    archiveName = 'bot.jar'
 }
 
 test {
