@@ -25,7 +25,7 @@ public class NikeService {
     private final long ONE_DAY_TIME = 1000 * 60 * 60 * 24;
     private final long MAX_CACHE_TIME = ONE_DAY_TIME * 5; //5일이 지나면 캐시에서 삭제
 
-    public List<String> getNikeNewRelease(List<String> inputData) {
+    public List<String> getNikeNewRelease(List<String> filterList) {
 
         List<String> result = new ArrayList<>();
         String url = "https://www.nike.com/kr/launch?s=in-stock";
@@ -47,9 +47,9 @@ public class NikeService {
                 NIKE_MODELS = new HashMap<>();
                 if(elems != null){
                     for(Element elem : elems) {
-                        String href = preUri + elem.attr("href");
-                        log.apply("[model init] "+href);
-                        NIKE_MODELS.put(href, System.currentTimeMillis());
+                        String modelName = parseModelName(elem.attr("href"));
+                        log.apply("[model init] "+modelName);
+                        NIKE_MODELS.put(modelName, System.currentTimeMillis());
                     }
                 }
 
@@ -64,13 +64,14 @@ public class NikeService {
 
                         //주소를 key 값으로 기존에 존재하는지 체크
                         String href = preUri + elem.attr("href");
-                        if(NIKE_MODELS.containsKey(href)){ //이미 처리한건 pass
+                        String modelName = parseModelName(href);
+                        if(NIKE_MODELS.containsKey(modelName)){ //이미 처리한건 pass
                             continue;
                         }
 
-                        if(inputData == null || filterContains(inputData, href)){
+                        if(filterList != null && !filterList.isEmpty() && filterContains(filterList, modelName)){
 
-                            NIKE_MODELS.put(href, System.currentTimeMillis());
+                            NIKE_MODELS.put(modelName, System.currentTimeMillis());
                             result.add(href);
 
                         }
@@ -87,6 +88,19 @@ public class NikeService {
 
         return result;
 
+    }
+
+    private String parseModelName(String url){
+
+        String[] sp = url.split("/");
+        if(sp.length > 0){
+            String[] sp2 = sp[sp.length - 1].split("\\?");
+            if(sp2.length > 0){
+                return sp2[0];
+            }
+        }
+
+        return "model name parse error";
     }
 
     private boolean filterContains(List<String> filterList, String href){
